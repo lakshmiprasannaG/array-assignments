@@ -3,28 +3,21 @@ const areBothArrays = function (firstElement, secondElement) {
   return isArray(firstElement) && isArray(secondElement);
 };
 
-const areArraysEqual = function (firstArray, secondArray) {
-  if (!areBothArrays(firstArray, secondArray)) {
+const areEqual = function (firstElement, secondElement) {
+  if (!areBothArrays(firstElement, secondElement)) {
+    return firstElement === secondElement;
+  }
+
+  if (firstElement.length !== secondElement.length) {
     return false;
   }
 
-  if (firstArray.length !== secondArray.length) {
-    return false;
-  }
-
-  for (let index = 0; index < firstArray.length; index++) {
-    if (!areEqual(firstArray[index], secondArray[index])) {
+  for (let index = 0; index < firstElement.length; index++) {
+    if (!areEqual(firstElement[index], secondElement[index])) {
       return false;
     }
   }
   return true;
-};
-
-const areEqual = function (firstElement, secondElement) {
-  if (areBothArrays(firstElement, secondElement)) {
-    return areArraysEqual(firstElement, secondElement);
-  }
-  return firstElement === secondElement;
 };
 
 const includes = function (set, element) {
