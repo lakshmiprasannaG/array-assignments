@@ -1,5 +1,6 @@
-const areBothArrays = function (element1, element2) {
-  return Array.isArray(element1) && Array.isArray(element2);
+const areBothArrays = function (firstElement, secondElement) {
+  const isArray = Array.isArray;
+  return isArray(firstElement) && isArray(secondElement);
 };
 
 const areArraysEqual = function (firstArray, secondArray) {
@@ -35,34 +36,36 @@ const includes = function (set, element) {
   return false;
 };
 
-const isAbsentEarlier = function (element, set) {
-  return !includes(set, element);
-};
-
-const groupSimilarElements = function (element, set) {
-  const setOfSimilarElements = [];
-
-  for (let index = 0; index < set.length; index++) {
-    if (areEqual(set[index], element)) {
-      setOfSimilarElements.push(set[index]);
+const firstIndexOf = function (groups, element) {
+  for (let index = 0; index < groups.length; index++) {
+    if (includes(groups[index], element)) {
+      return index;
     }
   }
-  return setOfSimilarElements;
+  return -1;
 };
 
-const groupSimilarElementSets = function (set) {
-  const setsOfSimilarElements = [];
-
-  for (let index = 0; index < set.length; index++) {
-    if (isAbsentEarlier(set[index], set.slice(0, index))) {
-      setsOfSimilarElements.push(groupSimilarElements(set[index], set.slice(index)));
-    }
+const accumulateGroup = function (groups, element) {
+  const index = firstIndexOf(groups, element);
+  if (index < 0) {
+    groups.push([element]);
+    return groups;
   }
-  return setsOfSimilarElements;
+  groups[index].push(element);
+  return groups;
 };
 
-console.log(groupSimilarElementSets([1]));
-console.log(groupSimilarElementSets([1, 2]));
-console.log(groupSimilarElementSets([1, 2, 1]));
-console.log(groupSimilarElementSets([1, 2, 1, 1]));
-console.log(groupSimilarElementSets([1, 2, 1, [1], [1, [1]], [1, [1]]]));
+const groupBy = function (list) {
+  let groups = [];
+
+  for (let index = 0; index < list.length; index++) {
+    groups = accumulateGroup(groups, list[index]);
+  }
+  return groups;
+};
+
+console.log(groupBy([1]));
+console.log(groupBy([1, 2]));
+console.log(groupBy([1, 2, 1]));
+console.log(groupBy([1, 2, 1, 1]));
+console.log(groupBy([1, 2, 1, [1], [1, [1]], [1, [1]]]));
