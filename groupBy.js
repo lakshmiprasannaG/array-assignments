@@ -45,21 +45,15 @@ const firstIndexOf = function (groups, element) {
   return -1;
 };
 
-const accumulateGroup = function (groups, element) {
-  const index = firstIndexOf(groups, element);
-  if (index < 0) {
-    groups.push([element]);
-    return groups;
-  }
-  groups[index].push(element);
-  return groups;
-};
-
 const groupBy = function (list) {
   let groups = [];
 
   for (let index = 0; index < list.length; index++) {
-    groups = accumulateGroup(groups, list[index]);
+    let groupIndex = firstIndexOf(groups, list[index]);
+    if (groupIndex < 0) {
+      groupIndex = groups.push([]) - 1;
+    }
+    groups[groupIndex].push(list[index]);
   }
   return groups;
 };
