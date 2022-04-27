@@ -15,6 +15,21 @@ const prasanna = {
 
 const players = [lakshmi, prasanna, suresh];
 
+const snakes = {
+  8: 3, 24: 11, 32: 13, 48: 34, 64: 29, 82: 12, 95: 46, 99: 83 
+};
+
+const ladders = {
+  5: 13, 19: 32, 26: 49, 31: 92, 47: 53, 59: 81, 73: 98, 84: 92
+};
+
+const board = {
+  players: players,
+  boardSize: 10,
+  snakes: snakes,
+  ladders: ladders
+};
+
 const cycle = function (collection) {
   let index = -1;
   return function () {
@@ -51,12 +66,23 @@ const displacePosition = function (position) {
   return valueToBeAdded + position;
 };
 
-const nextPosition = function (player, diceValue) {
-  currentPosition = player.position + diceValue;
-  if (isSnakeOrLadder(currentPosition)) {
-    return displacePosition(currentPosition);
+const isSnake = function (snakes, position) {
+  return snakes[position];
+};
+
+const isLadder = function (ladders, position) {
+  return ladders[position];
+};
+
+const nextPosition = function (board, player, diceValue) {
+  const position = player.position + diceValue;
+  if (isSnake(board.snakes, position)) {
+    return snakes[position];
   }
-  return currentPosition;
+  if (isLadder(board.ladders, position)) {
+    return ladders[position];
+  }
+  return position;
 };
 
 const createPlayerStats = function (player) {
@@ -66,12 +92,12 @@ const createPlayerStats = function (player) {
   };
 };
 
-const gameIsOn = function (currentPlayer) {
-  return currentPlayer.position < 10;
+const gameIsOn = function (currentPlayer, boardSize) {
+  return currentPlayer.position < boardSize;
 };
 
-const playGame = function (players) {
-  const playerSelector = cycle(players);
+const playGame = function (board) {
+  const playerSelector = cycle(board.players);
   let currentPlayer;
   do {
     currentPlayer = playerSelector();
@@ -80,13 +106,13 @@ const playGame = function (players) {
     const playerStats = createPlayerStats(currentPlayer);
     playerStats.diceValue = diceValue;
 
-    currentPlayer.position = nextPosition(currentPlayer, diceValue);
+    currentPlayer.position = nextPosition(board, currentPlayer, diceValue);
 
     playerStats.finalPosition = currentPlayer.position;
     console.table(playerStats);
-  } while(gameIsOn(currentPlayer));
+  } while(gameIsOn(currentPlayer, board.boardSize));
 
   return currentPlayer.name;
 };
 
-console.log(playGame(players), 'won!!');
+console.log(playGame(board), 'won!!');
