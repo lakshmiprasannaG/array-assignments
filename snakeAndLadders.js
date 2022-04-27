@@ -13,7 +13,7 @@ const prasanna = {
   position: 0
 };
 
-const players = [lakshmi, prasanna, suresh];
+const players = [lakshmi, prasanna];
 
 const snakes = {
   8: 3, 24: 11, 32: 13, 48: 34, 64: 29, 82: 12, 95: 46, 99: 83 
@@ -24,10 +24,14 @@ const ladders = {
 };
 
 const board = {
-  players: players,
   boardSize: 10,
   snakes: snakes,
   ladders: ladders
+};
+
+const game = {
+  board: board,
+  players: players
 };
 
 const cycle = function (collection) {
@@ -46,41 +50,21 @@ const rollDice = function (x) {
   return Math.ceil(Math.random() * x);
 };
 
-const isPerfectSquare = function (number) {
-  return Math.sqrt(number) === Math.floor(Math.sqrt(number));
+const isSnake = function (board, position) {
+  return !!board.snakes[position];
 };
 
-const isSnakeOrLadder = function (playerPosition) {
-  return isPerfectSquare(playerPosition);
-};
-
-const didSnakeBite = function (playerPosition) {
-  return isEven(playerPosition);
-};
-
-const displacePosition = function (position) {
-  let valueToBeAdded = Math.sqrt(position);
-  if (didSnakeBite(position)) {
-    valueToBeAdded = -valueToBeAdded;
-  }
-  return valueToBeAdded + position;
-};
-
-const isSnake = function (snakes, position) {
-  return snakes[position];
-};
-
-const isLadder = function (ladders, position) {
-  return ladders[position];
+const isLadder = function (board, position) {
+  return !!board.ladders[position];
 };
 
 const nextPosition = function (board, player, diceValue) {
   const position = player.position + diceValue;
-  if (isSnake(board.snakes, position)) {
-    return snakes[position];
+  if (isSnake(board, position)) {
+    return board.snakes[position];
   }
-  if (isLadder(board.ladders, position)) {
-    return ladders[position];
+  if (isLadder(board, position)) {
+    return board.ladders[position];
   }
   return position;
 };
@@ -92,12 +76,12 @@ const createPlayerStats = function (player) {
   };
 };
 
-const gameIsOn = function (currentPlayer, boardSize) {
-  return currentPlayer.position < boardSize;
+const gameIsOn = function (currentPlayer, board) {
+  return currentPlayer.position < board.boardSize;
 };
 
-const playGame = function (board) {
-  const playerSelector = cycle(board.players);
+const playGame = function (game) {
+  const playerSelector = cycle(game.players);
   let currentPlayer;
   do {
     currentPlayer = playerSelector();
@@ -106,13 +90,13 @@ const playGame = function (board) {
     const playerStats = createPlayerStats(currentPlayer);
     playerStats.diceValue = diceValue;
 
-    currentPlayer.position = nextPosition(board, currentPlayer, diceValue);
+    currentPlayer.position = nextPosition(game.board, currentPlayer, diceValue);
 
     playerStats.finalPosition = currentPlayer.position;
     console.table(playerStats);
-  } while(gameIsOn(currentPlayer, board.boardSize));
+  } while(gameIsOn(currentPlayer, game.board));
 
   return currentPlayer.name;
 };
 
-console.log(playGame(board), 'won!!');
+console.log(playGame(game), 'won!!');
