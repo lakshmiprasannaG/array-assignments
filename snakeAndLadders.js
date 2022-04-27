@@ -13,6 +13,8 @@ const prasanna = {
   position: 0
 };
 
+const players = [lakshmi, prasanna, suresh];
+
 const cycle = function (collection) {
   let index = -1;
   return function () {
@@ -25,7 +27,7 @@ const isEven = function (number) {
   return number % 2 === 0;
 };
  
-const randomNum = function (x) {
+const rollDice = function (x) {
   return Math.ceil(Math.random() * x);
 };
 
@@ -57,44 +59,34 @@ const nextPosition = function (player, diceValue) {
   return currentPosition;
 };
 
-const maxBy = function (property) {
-  return function (a, b) {
-    return a[property] > b[property] ? a : b;
-  };
-};
-
-const getWinner = function (players) {
-  return players.reduce(maxBy('position'));
-};
-
-const playerStats = function (player) {
+const createPlayerStats = function (player) {
   return {
     player: player.name,
     initialPosition: player.position,
   };
 };
 
+const gameIsOn = function (currentPlayer) {
+  return currentPlayer.position < 10;
+};
+
 const playGame = function (players) {
-  const player = cycle(players);
-  let currentPlayer ;
-  // let currentPlayer = players[0];
-  
+  const playerSelector = cycle(players);
+  let currentPlayer;
   do {
-    currentPlayer = player();
-    let diceValue = randomNum(6);
+    currentPlayer = playerSelector();
+    let diceValue = rollDice(6);
     
-    const currentPlayerStats = playerStats(currentPlayer);
-    currentPlayerStats.diceValue = diceValue;
+    const playerStats = createPlayerStats(currentPlayer);
+    playerStats.diceValue = diceValue;
 
     currentPlayer.position = nextPosition(currentPlayer, diceValue);
 
-    currentPlayerStats.finalPosition = currentPlayer.position;
-    console.table(currentPlayerStats);
-  } while (currentPlayer.position < 10);
+    playerStats.finalPosition = currentPlayer.position;
+    console.table(playerStats);
+  } while(gameIsOn(currentPlayer));
 
-  return getWinner(players).name;
+  return currentPlayer.name;
 };
-
-const players = [lakshmi, prasanna, suresh];
 
 console.log(playGame(players), 'won!!');
